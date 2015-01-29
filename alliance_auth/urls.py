@@ -10,7 +10,8 @@ urlpatterns = patterns('',
                        url(r'^admin/', include(admin.site.urls)),
 
                        # Index
-                       url(r'^$', 'portal.views.index_view', name='auth_index'),
+                       # url(r'^$', 'portal.views.index_view', name='auth_index'),
+                       url(r'^$', 'portal.views.dashboard_view', name='auth_dashboard'),
 
                        # Authentication Urls
                        url(r'^login_user/', 'authentication.views.login_user', name='auth_login_user'),

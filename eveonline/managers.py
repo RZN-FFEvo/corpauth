@@ -1,3 +1,4 @@
+from django.conf import settings
 from models import EveCharacter
 from models import EveApiKeyPair
 from models import EveAllianceInfo
@@ -22,8 +23,14 @@ class EveManager:
             eve_char.corporation_id = corporation_id
             eve_char.corporation_name = corporation_name
             eve_char.corporation_ticker = corporation_ticker
-            eve_char.alliance_id = alliance_id
-            eve_char.alliance_name = alliance_name
+
+            if corporation_id == settings.ALLIANCE_ID:
+                eve_char.alliance_id = corporation_id
+                eve_char.alliance_name = corporation_name
+            else:
+                eve_char.alliance_id = alliance_id
+                eve_char.alliance_name = alliance_name
+
             eve_char.user = user
             eve_char.api_id = api_id
             eve_char.save()
@@ -166,7 +173,12 @@ class EveManager:
     @staticmethod
     def get_charater_alliance_id_by_id(char_id):
         if EveCharacter.objects.filter(character_id=char_id).exists():
-            return EveCharacter.objects.get(character_id=char_id).alliance_id
+            return EveCharacter.objects.get(character_id=char_id).corporation_id
+
+    @staticmethod
+    def get_charater_corporation_id_by_id(char_id):
+        if EveCharacter.objects.filter(character_id=char_id).exists():
+            return EveCharacter.objects.get(character_id=char_id).corporation_id
 
     @staticmethod
     def check_if_character_owned_by_user(char_id, user):

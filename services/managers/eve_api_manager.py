@@ -49,12 +49,12 @@ class EveApiManager():
         return results
 
     @staticmethod
-    def get_corporation_information(corp_id):
+    def get_corporation_information(corp_id, api_id = None, api_key=None):
         results = {}
         try:
-            api = evelink.api.API()
+            api = evelink.api.API(api_key=(settings.ALLIANCE_EXEC_CORP_ID, settings.ALLIANCE_EXEC_CORP_VCODE))
             corp = evelink.corp.Corp(api=api)
-            corpinfo = corp.corporation_sheet(corp_id=int(corp_id))
+            corpinfo = corp.corporation_sheet(corp_id)
             results = corpinfo[0]
         except evelink.api.APIError as error:
             print error
