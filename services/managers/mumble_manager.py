@@ -56,7 +56,7 @@ class MumbleManager:
 
     @staticmethod
     def __generate_username(username, corp_ticker):
-        return "[" + corp_ticker + "]" + username
+        return username
 
     @staticmethod
     def __generate_username_blue(username, corp_ticker):
