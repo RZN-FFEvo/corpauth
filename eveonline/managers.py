@@ -24,10 +24,12 @@ class EveManager:
             eve_char.corporation_name = corporation_name
             eve_char.corporation_ticker = corporation_ticker
 
-            if corporation_id == settings.ALLIANCE_ID:
+            if int(corporation_id) == int(settings.ALLIANCE_ID):
+                # print 'adding corp member'
                 eve_char.alliance_id = corporation_id
                 eve_char.alliance_name = corporation_name
             else:
+                # print 'adding none corp member'
                 eve_char.alliance_id = alliance_id
                 eve_char.alliance_name = alliance_name
 
@@ -59,8 +61,12 @@ class EveManager:
                 eve_char.corporation_name = chars.result[char]['corp']['name']
                 eve_char.corporation_ticker = EveApiManager.get_corporation_ticker_from_id(
                     chars.result[char]['corp']['id'])
-                eve_char.alliance_id = chars.result[char]['alliance']['id']
-                eve_char.alliance_name = chars.result[char]['alliance']['name']
+                if int(eve_char.corporation_id) == int(settings.ALLIANCE_ID):
+                    eve_char.alliance_id = chars.result[char]['corp']['id']
+                    eve_char.alliance_name = chars.result[char]['corp']['name']
+                else:
+                    eve_char.alliance_id = chars.result[char]['alliance']['id']
+                    eve_char.alliance_name = chars.result[char]['alliance']['name']
                 eve_char.save()
 
 

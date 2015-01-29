@@ -208,9 +208,11 @@ def run_api_refresh():
                             if settings.ALLIANCE_MODE:
                                 main_alliance_id = EveManager.get_charater_alliance_id_by_id(authserviceinfo.main_char_id)
                             else:
+                                print 'Running in corp mode'
                                 main_alliance_id = EveManager.get_charater_corporation_id_by_id(authserviceinfo.main_char_id)
+                                print 'Corp ID: ' + main_alliance_id
 
-                            if main_alliance_id == settings.ALLIANCE_ID:
+                            if int(main_alliance_id) == settings.ALLIANCE_ID:
                                 pass
                             elif corp is not None:
                                 if corp.is_blue is not True:

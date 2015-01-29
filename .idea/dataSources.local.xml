@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="dataSourceStorageLocal">
+    <data-source name="Django default" uuid="3eb61453-647a-4832-8320-f3561f039abc">
+      <user-name>allianceauth</user-name>
+      <user-password>dfcbdfc6dfc6dfc3dfcbdfc4dfc9dfcfdfcbdfdfdfdedfc2</user-password>
+    </data-source>
+    <data-source name="Django phpbb3" uuid="2de247c2-1951-4e74-8276-6a1c89c396fa">
+      <user-name>allianceauth</user-name>
+      <user-password>dfcbdfc6dfc6dfc3dfcbdfc4dfc9dfcfdfcbdfdfdfdedfc2</user-password>
+    </data-source>
+    <data-source name="Django mumble" uuid="9963e5ca-7f2f-4dd3-9175-bc7102dfd48c">
+      <user-name>alliancemumble</user-name>
+      <user-password>dfcbdfc6dfc6dfc3dfcbdfc4dfc9dfcfdfc7dfdfdfc7dfc8dfc6dfcf</user-password>
+    </data-source>
+  </component>
+</project>
