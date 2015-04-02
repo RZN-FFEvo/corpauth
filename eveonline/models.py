@@ -2,6 +2,20 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+class EveStarbaseList(models.Model):
+    pos_id = models.CharField(max_length=254)
+    pos_type_id = models.CharField(max_length=254)
+    pos_location_id = models.CharField(max_length=254)
+
+
+class EveCache(models.Model):
+    cache_key = models.CharField(max_length=254)
+    cache_expire = models.CharField(max_length=254)
+
+    def __str__(self):
+        return self.cache_value
+
+
 class EveCharacter(models.Model):
     character_id = models.CharField(max_length=254)
     character_name = models.CharField(max_length=254)
@@ -48,3 +62,10 @@ class EveCorporationInfo(models.Model):
 
     def __str__(self):
         return self.corporation_name
+
+
+class EveCorporationKills(models.Model):
+    kill_id = models.CharField(max_length=254)
+
+    def __str__(self):
+        return self.kill_id

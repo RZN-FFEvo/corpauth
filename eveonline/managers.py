@@ -3,13 +3,37 @@ from models import EveCharacter
 from models import EveApiKeyPair
 from models import EveAllianceInfo
 from models import EveCorporationInfo
-
+from models import EveCorporationKills
+from models import EveCache
+import time
 from services.managers.eve_api_manager import EveApiManager
 
 
+# noinspection PyPackageRequirements
 class EveManager:
     def __init__(self):
         pass
+
+    @staticmethod
+    def cache_expired(key):
+        if EveCache.objects.filter(cache_key=key).exists():
+            cached = EveCache.objects.get(cache_key=key)
+            if cached.cache_expire < time.time():
+                cached.delete()
+                return True
+            else:
+                return False
+        return True
+
+    @staticmethod
+    def cache_put(key, duration):
+        cached = EveCache.objects.get(cache_key=key)
+        if not cached:
+            cached = EveCache()
+
+        cached.cache_key = key
+        cached.cache_expire = duration
+        cached.save()
 
     @staticmethod
     def create_character(character_id, character_name, corporation_id,
@@ -113,6 +137,19 @@ class EveManager:
             if alliance:
                 corp_info.alliance = alliance
             corp_info.save()
+
+    @staticmethod
+    def check_corporation_kill(kill_id):
+        return EveCorporationKills.objects.filter(kill_id=kill_id).exists()
+
+    @staticmethod
+    def create_corporation_kill(kill_id):
+        if not EveManager.check_corporation_kill(kill_id):
+            kill_info = EveCorporationKills()
+            kill_info.kill_id = kill_id
+            kill_info.save()
+            return True
+        return False
 
     @staticmethod
     def update_corporation_info(corp_id, corp_member_count, alliance, is_blue):

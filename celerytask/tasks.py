@@ -13,6 +13,8 @@ from authentication.models import AuthServicesInfo
 from eveonline.managers import EveManager
 from services.managers.eve_api_manager import EveApiManager
 from util.common_task import deactivate_services
+from services.managers.slack_manager import SlackManager
+
 
 
 def update_jabber_groups(user):
@@ -172,9 +174,28 @@ def run_databaseUpdate():
         remove_from_databases(user, groups, syncgroups)
 
 
+@periodic_task(run_every=crontab(minute="*/5"))
+def test_kill():
+    # no point if slack isn't enabled
+    if SlackManager.enabled():
+        if EveApiManager.check_if_api_server_online():
+            kill_api = EveApiManager.get_corp_kills(settings.ALLIANCE_EXEC_CORP_ID, settings.ALLIANCE_EXEC_CORP_VCODE)
+            for kill in kill_api.result:
+                if not EveManager.check_corporation_kill(kill):
+                    # if sent save to db
+                    if SlackManager.send_kill(kill):
+                        EveManager.create_corporation_kill(kill)
+
+
+@periodic_task(run_every=crontab(minute="*/5"))
+def test():
+    EveApiManager.check_if_api_server_online()
+
+
 # Run every 3 hours
 @periodic_task(run_every=crontab(minute=0, hour="*/3"))
 def run_api_refresh():
+
     users = User.objects.all()
 
     for user in users:
@@ -182,55 +203,52 @@ def run_api_refresh():
         if EveApiManager.check_if_api_server_online():
             api_key_pairs = EveManager.get_api_key_pairs(user.id)
             if api_key_pairs:
-                valid_key = False
                 authserviceinfo = AuthServicesInfo.objects.get(user=user)
 
-                print 'Running update on user: ' + user.username
-                if authserviceinfo.main_char_id:
-                    if authserviceinfo.main_char_id != "":
-                        for api_key_pair in api_key_pairs:
+                if settings.DEBUG:
+                    print 'Running update on user: ' + user.username
+                if authserviceinfo.main_char_id and authserviceinfo.main_char_id != "":
+                    for api_key_pair in api_key_pairs:
+                        if settings.DEBUG:
                             print 'Running on ' + api_key_pair.api_id + ':' + api_key_pair.api_key
-                            if EveApiManager.api_key_is_valid(api_key_pair.api_id, api_key_pair.api_key):
-                                # Update characters
-                                characters = EveApiManager.get_characters_from_api(api_key_pair.api_id,
-                                                                                   api_key_pair.api_key)
-                                EveManager.update_characters_from_list(characters)
-                                valid_key = True
-                            else:
-                                EveManager.delete_characters_by_api_id(api_key_pair.api_id, user)
-                                EveManager.delete_api_key_pair(api_key_pair.api_id, api_key_pair.api_key)
-
-                        if valid_key:
+                        if EveApiManager.api_key_is_valid(api_key_pair.api_id, api_key_pair.api_key):
+                            # Update characters
+                            characters = EveApiManager.get_characters_from_api(api_key_pair.api_id,
+                                                                               api_key_pair.api_key)
+                            EveManager.update_characters_from_list(characters)
                             # Check our main character
                             character = EveManager.get_character_by_id(authserviceinfo.main_char_id)
-                            corp = EveManager.get_corporation_info_by_id(character.corporation_id)
+                            main_alliance_id = EveManager.get_charater_corporation_id_by_id(
+                                authserviceinfo.main_char_id)
 
-                            if settings.ALLIANCE_MODE:
-                                main_alliance_id = EveManager.get_charater_alliance_id_by_id(authserviceinfo.main_char_id)
-                            else:
-                                # print 'Running in corp mode'
-                                main_alliance_id = EveManager.get_charater_corporation_id_by_id(authserviceinfo.main_char_id)
-                                # print 'Corp ID: ' + main_alliance_id
+                            # NPC corps return as None
+                            if main_alliance_id is None or int(main_alliance_id) != int(settings.ALLIANCE_ID):
+                                if settings.DEBUG:
+                                    print 'Not in Corp'
 
-                            if int(main_alliance_id) == int(settings.ALLIANCE_ID):
-                                pass
-                            elif corp is not None:
-                                if corp.is_blue is not True:
-                                    print 'Corp is not blue ' + corp.corporation_name
-                                    deactivate_services(user)
-                            else:
-                                print 'Corp is not corp ' + corp.corporation_name
+                                SlackManager.send_director('API ERROR: ' + character.character_name +
+                                                           ' Not in corp.\n\tServices disabled.\n\tAPI removed.')
                                 deactivate_services(user)
+                                EveManager.delete_characters_by_api_id(api_key_pair.api_id, user.id)
+                                EveManager.delete_api_key_pair(api_key_pair.api_id, user.id)
                         else:
-                            print 'bad key for ' + user.username
-                            # nuke it
+                            if settings.DEBUG:
+                                print 'Bad API Deleting character and api for ' + user.username
+
+                            SlackManager.send_director('API ERROR: Bad API for user ' + user.username +
+                                                       '\n\tServices disabled.\n\tAPI removed.')
                             deactivate_services(user)
+                            EveManager.delete_characters_by_api_id(api_key_pair.api_id, user.id)
+                            EveManager.delete_api_key_pair(api_key_pair.api_id, user.id)
+
                 else:
-                    print 'No main_char_id set'
+                    if settings.DEBUG:
+                        print 'No main_char_id set'
+                        # SlackManager.send_director('API ERROR: No main character set for user ' + user.username)
 
 
 # Run Every 2 hours
-@periodic_task(run_every=crontab(minute=0, hour="*/2"))
+@periodic_task(run_every=crontab(minute=0, hour="*/24"))
 def run_alliance_corp_update():
     # I am not proud of this block of code
     if EveApiManager.check_if_api_server_online():

@@ -1,7 +1,7 @@
 import evelink.api
 import evelink.char
 import evelink.eve
-
+from evelink.cache.shelf import ShelveCache
 from django.conf import settings
 
 
@@ -120,7 +120,7 @@ class EveApiManager():
             api = evelink.api.API()
             server = evelink.server.Server(api=api)
             info = server.server_status()
-            return True
+            return info.result['online']
         except evelink.api.APIError as error:
             return False
 
@@ -138,6 +138,17 @@ class EveApiManager():
             return False
 
         return False
+
+    @staticmethod
+    def get_corp_kills(api_id, api_key):
+        try:
+            cache = ShelveCache('kills.dat')
+            api = evelink.api.API(api_key=(api_id, api_key), cache=cache)
+            corp = evelink.corp.Corp(api=api)
+            kill_log = corp.kills()
+            return kill_log
+        except evelink.api.APIError as error:
+            return {}
 
     @staticmethod
     def get_alliance_standings():

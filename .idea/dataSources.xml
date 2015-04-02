@@ -1,22 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="DataSourceManagerImpl" format="xml" hash="1026499400">
-    <data-source source="LOCAL" name="Django default" uuid="3eb61453-647a-4832-8320-f3561f039abc">
+  <component name="DataSourceManagerImpl" format="xml" hash="312482922">
+    <data-source source="LOCAL" name="MySQL - maythorn_cache@localhost" uuid="0aa6451d-a59c-4e03-8d26-2157caccacd2">
       <driver-ref>mysql</driver-ref>
+      <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://127.0.0.1:3306/alliance_auth</jdbc-url>
-      <libraries />
-    </data-source>
-    <data-source source="LOCAL" name="Django phpbb3" uuid="2de247c2-1951-4e74-8276-6a1c89c396fa">
-      <driver-ref>mysql</driver-ref>
-      <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://127.0.0.1:3306/alliance_forum</jdbc-url>
-      <libraries />
-    </data-source>
-    <data-source source="LOCAL" name="Django mumble" uuid="9963e5ca-7f2f-4dd3-9175-bc7102dfd48c">
-      <driver-ref>mysql</driver-ref>
-      <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://127.0.0.1:3306/alliance_mumble</jdbc-url>
+      <jdbc-url>jdbc:mysql://localhost:3306/maythorn_cache</jdbc-url>
+      <driver-properties>
+        <property name="zeroDateTimeBehavior" value="convertToNull" />
+        <property name="tinyInt1isBit" value="false" />
+        <property name="characterEncoding" value="utf8" />
+        <property name="characterSetResults" value="utf8" />
+        <property name="yearIsDateType" value="false" />
+      </driver-properties>
       <libraries />
     </data-source>
   </component>
