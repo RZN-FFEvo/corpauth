@@ -220,7 +220,7 @@ def run_api_refresh():
                                 if settings.DEBUG:
                                     print 'Not in Corp'
 
-                                SlackManager.send_director('API ERROR: ' + character.character_name +
+                                SlackManager.send_director('API ERROR: ' + user.username +
                                                            ' Not in corp.\n\tServices disabled.\n\tAPI removed.')
                                 deactivate_services(user)
                                 EveManager.delete_characters_by_api_id(api_key_pair.api_id, user.id)
