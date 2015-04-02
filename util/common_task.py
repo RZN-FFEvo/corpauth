@@ -24,6 +24,11 @@ def remove_user_from_group(user, groupname):
         user.save()
 
 
+def remove_user_all_groups(user):
+    user = User.objects.get(username=user.username)
+    user.groups.clear()
+
+
 def deactivate_services(user):
     authinfo = AuthServicesInfoManager.get_auth_service_info(user)
     if authinfo.mumble_username and authinfo.mumble_username != "":

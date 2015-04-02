@@ -13,8 +13,8 @@ from authentication.models import AuthServicesInfo
 from eveonline.managers import EveManager
 from services.managers.eve_api_manager import EveApiManager
 from util.common_task import deactivate_services
+from util.common_task import remove_user_all_groups
 from services.managers.slack_manager import SlackManager
-
 
 
 def update_jabber_groups(user):
@@ -191,7 +191,7 @@ def prime_kills():
         kill_api = EveApiManager.get_corp_kills(settings.ALLIANCE_EXEC_CORP_ID, settings.ALLIANCE_EXEC_CORP_VCODE)
         for kill in kill_api.result:
             EveManager.create_corporation_kill(kill)
-            
+
 
 # Run every 3 hours
 @periodic_task(run_every=crontab(minute=0, hour="*/3"))
@@ -229,6 +229,8 @@ def run_api_refresh():
 
                                 SlackManager.send_director('API ERROR: ' + user.username +
                                                            ' Not in corp.\n\tServices disabled.\n\tAPI removed.')
+
+                                remove_user_all_groups(user)
                                 deactivate_services(user)
                                 EveManager.delete_characters_by_api_id(api_key_pair.api_id, user.id)
                                 EveManager.delete_api_key_pair(api_key_pair.api_id, user.id)
@@ -238,6 +240,8 @@ def run_api_refresh():
 
                             SlackManager.send_director('API ERROR: Bad API for user ' + user.username +
                                                        '\n\tServices disabled.\n\tAPI removed.')
+
+                            remove_user_all_groups(user)
                             deactivate_services(user)
                             EveManager.delete_characters_by_api_id(api_key_pair.api_id, user.id)
                             EveManager.delete_api_key_pair(api_key_pair.api_id, user.id)
