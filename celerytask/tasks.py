@@ -173,10 +173,9 @@ def run_databaseUpdate():
         add_to_databases(user, groups, syncgroups)
         remove_from_databases(user, groups, syncgroups)
 
-
-@periodic_task(run_every=crontab(minute="*/5"))
-def test_kill():
     # no point if slack isn't enabled
+    # this isn't really going to run every minute
+    # cache will stop it
     if SlackManager.enabled():
         if EveApiManager.check_if_api_server_online():
             kill_api = EveApiManager.get_corp_kills(settings.ALLIANCE_EXEC_CORP_ID, settings.ALLIANCE_EXEC_CORP_VCODE)
@@ -185,11 +184,6 @@ def test_kill():
                     # if sent save to db
                     if SlackManager.send_kill(kill):
                         EveManager.create_corporation_kill(kill)
-
-
-@periodic_task(run_every=crontab(minute="*/5"))
-def test():
-    EveApiManager.check_if_api_server_online()
 
 
 # Run every 3 hours
