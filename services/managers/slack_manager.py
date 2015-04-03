@@ -59,7 +59,7 @@ class SlackManager:
             connection = SlackClient(settings.SLACK_TOKEN)
             try:
                 connection.chat_post_message(
-                    settings.SLACK_TEST_CHANNEL if settings.SLACK_TEST else settings.SLACK_GENERAL_CHANNEL,
+                    settings.SLACK_TEST_CHANNEL if settings.SLACK_TEST else settings.SLACK_KILL_CHANNEL,
                     "https://zkillboard.com/kill/" + str(kill_id) + "/",
                     username=settings.SLACK_BOT,
                     parse='full',

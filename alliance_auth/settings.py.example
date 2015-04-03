@@ -160,6 +160,7 @@ SLACK_BOT = 'spambot'
 SLACK_TOKEN = 'somekey'
 SLACK_GENERAL_CHANNEL = '#general'
 SLACK_DIRECTOR_CHANNEL = '#directors'
+SLACK_KILL_CHANNEL = '#making-grown-men-cry'
 SLACK_TEST_CHANNEL = '#test'
 
 #################
