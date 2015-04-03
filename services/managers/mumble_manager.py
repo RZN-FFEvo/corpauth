@@ -55,7 +55,7 @@ class MumbleManager:
         return os.urandom(8).encode('hex')
 
     @staticmethod
-    def __generate_username(username):
+    def __generate_username(username, corp_ticker):
         return username
 
     @staticmethod
